@@ -1,5 +1,5 @@
 import { createContext, ReactNode, useEffect, useState } from "react";
-import { auth, firebase } from "../services/firebase";
+import { auth, firebase } from '../services/firebase';
 
 type User = {
   id: string;
@@ -19,16 +19,14 @@ type AuthContextProviderProps = {
 export const AuthContext = createContext({} as AuthContextType);
 
 export const AuthContextProvider = (props: AuthContextProviderProps) => {
-  const [user, setUser] = useState<User>();
+  const [user, setUser] = useState<User>()
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged(user => {
       if (user) {
         const { displayName, photoURL, uid } = user
 
-        if (!displayName || !photoURL) {
-          throw new Error('Missing information from Google Account.');
-        }
+        if (!displayName || !photoURL) throw new Error('Missing information from Google Account.')
 
         setUser({
           id: uid,
@@ -38,22 +36,18 @@ export const AuthContextProvider = (props: AuthContextProviderProps) => {
       }
     })
 
-    return () => {
-      unsubscribe();
-    }
+    return () => unsubscribe()
   }, [])
 
   const signInWithGoogle = async () => {
-    const provider = new firebase.auth.GoogleAuthProvider();
+    const provider = new firebase.auth.GithubAuthProvider()
 
-    const result = await auth.signInWithPopup(provider);
+    const result = await auth.signInWithPopup(provider)
 
     if (result.user) {
       const { displayName, photoURL, uid } = result.user
 
-      if (!displayName || !photoURL) {
-        throw new Error('Missing information from Google Account.');
-      }
+      if (!displayName || !photoURL) throw new Error('Missing information from Google Account.')
 
       setUser({
         id: uid,
@@ -62,10 +56,10 @@ export const AuthContextProvider = (props: AuthContextProviderProps) => {
       })
     }
   }
-  
   return (
-    <AuthContext.Provider value={{ user, signInWithGoogle }}>
+    <AuthContext.Provider value={{ user, signInWithGoogle }} >
       {props.children}
     </AuthContext.Provider>
-  );
+
+  )
 }
